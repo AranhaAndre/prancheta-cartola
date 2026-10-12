@@ -1,0 +1,524 @@
+<title>Prancheta Cartola 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: prancheta de técnico — barra de controles no topo, abas de trabalho, campo + tabela lado a lado no desktop, empilhados no celular */
+:root{
+  --bg:#EFF2EC; --surface:#FFFFFF; --ink:#16201A; --muted:#5B695F; --line:#D6DDD3;
+  --accent:#0E7C4A; --accent-soft:#DCEFE3; --hi:#C98A00; --hi-soft:#FBEFCF; --bad:#B9402B; --bad-soft:#F8E1DC;
+  --pitch:#1E7A4B; --pitch2:#22874F; --pitchline:rgba(255,255,255,.55); --chip:#FFFFFF; --chipink:#16201A;
+  --f-disp:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;
+  --f-body:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1511; --surface:#16201A; --ink:#E4EBE5; --muted:#93A398; --line:#2A3730;
+  --accent:#43C283; --accent-soft:#183A28; --hi:#F0B52E; --hi-soft:#3A2F12; --bad:#F07A62; --bad-soft:#3D1E18;
+  --pitch:#15452C; --pitch2:#184E32; --pitchline:rgba(255,255,255,.28); --chip:#1C2922; --chipink:#E4EBE5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1511; --surface:#16201A; --ink:#E4EBE5; --muted:#93A398; --line:#2A3730;
+  --accent:#43C283; --accent-soft:#183A28; --hi:#F0B52E; --hi-soft:#3A2F12; --bad:#F07A62; --bad-soft:#3D1E18;
+  --pitch:#15452C; --pitch2:#184E32; --pitchline:rgba(255,255,255,.28); --chip:#1C2922; --chipink:#E4EBE5; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45;padding-inline:16px;padding-block:20px 48px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1,h2,h3{font-family:var(--f-disp);text-wrap:balance;margin:0;letter-spacing:.01em}
+h1{font-size:clamp(28px,4vw,40px);line-height:1}
+h2{font-size:24px}
+h3{font-size:18px}
+.num{font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.lbl{font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:600}
+header{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:12px}
+.datastate{font-size:13px;color:var(--muted);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600;border:1px solid var(--line);background:var(--surface);white-space:nowrap}
+.pill.ok{background:var(--accent-soft);border-color:transparent;color:var(--accent)}
+.pill.warn{background:var(--hi-soft);border-color:transparent;color:var(--hi)}
+.pill.bad{background:var(--bad-soft);border-color:transparent;color:var(--bad)}
+.controls{display:flex;flex-wrap:wrap;gap:12px 18px;align-items:flex-end;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.field{display:flex;flex-direction:column;gap:4px}
+.field input,.field select{font:inherit;font-family:var(--f-mono);padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);min-width:0;width:120px}
+.field select{width:auto}
+.check{display:flex;gap:7px;align-items:center;font-size:14px;padding-bottom:7px}
+button{font:inherit;font-weight:600;cursor:pointer;border-radius:7px;border:1px solid var(--line);background:var(--surface);color:var(--ink);padding:8px 13px}
+button:hover{border-color:var(--accent)}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.primary{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+button.small{padding:3px 8px;font-size:12px;font-weight:600}
+button.on{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.spacer{flex:1}
+nav.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);overflow-x:auto}
+nav.tabs button{border:none;border-bottom:3px solid transparent;border-radius:0;background:none;padding:10px 14px;font-family:var(--f-disp);font-size:18px;color:var(--muted);white-space:nowrap}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
+.grid2{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:900px){.grid2{grid-template-columns:minmax(0,1fr)}}
+.summary{display:flex;flex-wrap:wrap;gap:10px 26px;align-items:baseline}
+.summary .big{font-family:var(--f-disp);font-size:34px;line-height:1}
+/* campo */
+.pitch{position:relative;border-radius:10px;padding:18px 10px 14px;background:repeating-linear-gradient(180deg,var(--pitch) 0 44px,var(--pitch2) 44px 88px);display:flex;flex-direction:column;gap:14px;overflow:hidden}
+.pitch::before{content:"";position:absolute;inset:8px;border:2px solid var(--pitchline);border-radius:4px;pointer-events:none}
+.pitch::after{content:"";position:absolute;left:50%;bottom:8px;width:44%;height:52px;transform:translateX(-50%);border:2px solid var(--pitchline);border-bottom:none;pointer-events:none}
+.line{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;position:relative;z-index:1}
+.chip{background:var(--chip);color:var(--chipink);border-radius:7px;padding:5px 7px 6px;min-width:0;width:94px;text-align:center;box-shadow:0 1px 2px rgba(0,0,0,.25);position:relative}
+.chip .nm{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chip .sub{font-size:11px;color:var(--muted)}
+.chip .xp{font-family:var(--f-mono);font-size:13px;font-weight:500;color:var(--accent)}
+.chip.bench{background:var(--surface);border:1px dashed var(--line);box-shadow:none}
+.benchline{justify-content:flex-start}
+.cap.lux{background:var(--hi)}
+.benchrow td{background:color-mix(in srgb,var(--hi-soft) 40%,transparent)}
+.chip .cap{position:absolute;top:-7px;right:-5px;background:var(--hi);color:var(--bg);font-weight:700;font-size:11px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-family:var(--f-disp)}
+.coach{margin-top:4px}
+/* tabelas */
+.tablebox{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:10px}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600;white-space:nowrap;position:sticky;top:0;background:var(--surface)}
+th.sort{cursor:pointer}
+td.r,th.r{text-align:right}
+tr:last-child td{border-bottom:none}
+.why{font-size:12.5px;color:var(--muted);max-width:420px}
+.why b{color:var(--ink);font-weight:600}
+.up{color:var(--accent)} .down{color:var(--bad)}
+.posbar{display:flex;gap:6px;flex-wrap:wrap}
+/* confrontos */
+.games{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+@media (max-width:400px){.games{grid-template-columns:minmax(0,1fr)}}
+.game{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.vs{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:8px}
+.vs .t{font-family:var(--f-disp);font-size:24px}
+.vs .t.away{text-align:right}
+.vs .xg{font-family:var(--f-mono);font-size:13px;color:var(--muted);text-align:center}
+.prob{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--line)}
+.prob span:nth-child(1){background:var(--accent)} .prob span:nth-child(2){background:var(--muted)} .prob span:nth-child(3){background:var(--bad)}
+.probtxt{display:flex;justify-content:space-between;font-size:12px;color:var(--muted)}
+.weak{display:grid;grid-template-columns:1fr 1fr;gap:10px;font-size:12.5px}
+.weak ul{margin:4px 0 0;padding-left:16px}
+/* heatmap */
+.heat td{text-align:center;font-family:var(--f-mono);font-size:13px;min-width:56px}
+.heat td:first-child{text-align:left;font-family:var(--f-body);font-weight:600}
+.heat .vsx{display:block;font-size:10.5px;color:inherit;opacity:.8;font-family:var(--f-body)}
+.prose{max-width:72ch;display:flex;flex-direction:column;gap:12px}
+.prose p{margin:0}
+.callout{background:var(--hi-soft);border-radius:8px;padding:12px 14px;font-size:14px}
+dialog{border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--ink);max-width:min(680px,calc(100vw - 32px));width:100%;padding:20px}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+dialog textarea{width:100%;min-height:120px;font-family:var(--f-mono);font-size:12px;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px}
+.dlgrow{display:flex;flex-direction:column;gap:10px}
+code{font-family:var(--f-mono);font-size:12.5px;background:var(--bg);padding:1px 5px;border-radius:4px;word-break:break-all}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;z-index:9;max-width:calc(100vw - 32px)}
+@media (prefers-reduced-motion:no-preference){.chip{transition:transform .15s}.chip:hover{transform:translateY(-2px)}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div style="display:flex;flex-direction:column;gap:6px">
+      <span class="lbl">Brasileirão 2026 · Cartola</span>
+      <h1>Prancheta Cartola 2026</h1>
+    </div>
+    <div class="datastate" id="datastate"></div>
+  </header>
+
+  <section class="controls" aria-label="Parâmetros">
+    <div class="field"><label class="lbl" for="rodada">Rodada</label><select id="rodada"></select></div>
+    <div class="field"><label class="lbl" for="budget">Cartoletas C$</label><input id="budget" type="number" step="0.01" min="40" value="120"></div>
+    <div class="field"><label class="lbl" for="minj">Mín. jogos</label><input id="minj" type="number" min="0" max="30" value="3" style="width:80px"></div>
+    <div class="field"><label class="lbl" for="formacao">Esquema</label><select id="formacao"><option value="auto">Melhor automático</option></select></div>
+    <label class="check"><input type="checkbox" id="duvida"> Incluir “Dúvida”</label>
+    <label class="check"><input type="checkbox" id="usewx"> Cruzar com clima</label>
+    <label class="check" title="Multiplica a projeção pela chance de o jogador entrar em campo (status, participação recente, preço)"><input type="checkbox" id="usepp"> Ponderar P(joga)</label>
+    <span class="spacer"></span>
+    <button id="btnMercado" class="primary">Atualizar escalações</button>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="time" aria-selected="true">Time sugerido</button>
+    <button role="tab" data-tab="jogos">Confrontos</button>
+    <button role="tab" data-tab="rank">Ranking</button>
+    <button role="tab" data-tab="plan">8 rodadas</button>
+    <button role="tab" data-tab="clima">Clima</button>
+    <button role="tab" data-tab="metodo">Método</button>
+  </nav>
+
+  <section id="tab-time" class="tab"></section>
+  <section id="tab-jogos" class="tab" hidden></section>
+  <section id="tab-rank" class="tab" hidden></section>
+  <section id="tab-plan" class="tab" hidden></section>
+  <section id="tab-clima" class="tab" hidden></section>
+  <section id="tab-metodo" class="tab" hidden></section>
+</div>
+
+<dialog id="dlg">
+  <div class="dlgrow">
+    <h2>Atualizar escalações e preços</h2>
+    <p class="muted" style="margin:0">O status “Provável” e os preços saem do mercado oficial do Cartola. Este painel não consegue ler a API da Globo direto (o navegador bloqueia), então traga o arquivo em 3 passos:</p>
+    <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px">
+      <li>Com o mercado aberto, abra <a href="https://api.cartola.globo.com/atletas/mercado" target="_blank" rel="noopener">api.cartola.globo.com/atletas/mercado</a>.</li>
+      <li>Salve a página (Ctrl+S) como <code>mercado.json</code>, ou selecione tudo e copie.</li>
+      <li>Carregue o arquivo abaixo ou cole o conteúdo. Opcional: faça o mesmo com <a href="https://api.cartola.globo.com/partidas" target="_blank" rel="noopener">/partidas</a> para saber quais jogos valem na rodada.</li>
+    </ol>
+    <input type="file" id="fileIn" accept=".json,application/json" multiple>
+    <textarea id="pasteIn" placeholder='Cole aqui o JSON de /atletas/mercado ou /partidas'></textarea>
+    <p class="muted" style="margin:0;font-size:13px">Também aceita o <code>model_data.json</code> gerado pelo script de atualização do modelo.</p>
+    <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+      <button id="dlgClose">Fechar</button>
+      <button id="dlgApply" class="primary">Aplicar JSON colado</button>
+    </div>
+  </div>
+</dialog>
+
+<script type="application/json" id="model-data">__DATA__</script>
+<script>
+__ENGINE__
+</script>
+<script>
+(function(){
+let D=JSON.parse(document.getElementById('model-data').textContent);
+const store={get(k,d){try{const v=localStorage.getItem('pc26_'+k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem('pc26_'+k,JSON.stringify(v))}catch(e){}}};
+const NOMES={FLA:'Flamengo',BOT:'Botafogo',COR:'Corinthians',BAH:'Bahia',FLU:'Fluminense',VAS:'Vasco',PAL:'Palmeiras',SAO:'São Paulo',SAN:'Santos',RBB:'Bragantino',CAM:'Atlético-MG',CRU:'Cruzeiro',GRE:'Grêmio',INT:'Internacional',VIT:'Vitória',CAP:'Athletico-PR',CFC:'Coritiba',CHA:'Chapecoense',REM:'Remo',MIR:'Mirassol'};
+const SCOUTN={DS:'desarmes',FD:'fin. defendidas',FF:'fin. para fora',FT:'fin. na trave',FS:'faltas sofridas',FC:'faltas cometidas',I:'impedimentos',CA:'amarelos',G:'gols',A:'assistências',DE:'defesas',SG:'sem gol sofrido',GS:'gols sofridos'};
+let state={rodada:store.get('rodada','31'),budget:store.get('budget',120),minj:store.get('minj',3),duvida:store.get('duvida',false),formacao:store.get('formacao','auto'),
+  locks:new Set(store.get('locks',[])),vetos:new Set(store.get('vetos',[])),mercado:store.get('mercadoMeta',null),partidas:null,rankPos:'all',rankSort:'ev',tab:'time',planMetric:'sg',usewx:store.get('usewx',false),usepp:store.get('usepp',true),wxEdit:store.get('wxEdit',{}),elast:store.get('elast',null),wxScenario:'prev'};
+// mercado salvo localmente (status/preço)
+let override=store.get('mercadoOverride',null);
+// [repo] mercado oficial embutido pelo build automático (meta.mercado): uma importação manual mais antiga que ele é descartada,
+// e a rodada selecionada avança para a rodada em aberto quando a salva no navegador já passou
+const BM=()=>(D.meta&&D.meta.mercado)||null;
+(function(){ const b=BM(); if(!b) return;
+  if(b.ts&&override&&!((override.ts||0)>b.ts)){ override=null; store.set('mercadoOverride',null); state.mercado=null; store.set('mercadoMeta',null); }
+  if(b.rodada_alvo&&D.fixtures[b.rodada_alvo]&&+state.rodada<+b.rodada_alvo) state.rodada=String(b.rodada_alvo);
+})();
+const dhm=ms=>new Date(ms).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
+function pillMercado(){
+  const m=state.mercado, b=BM();
+  if(m) return `<span class="pill ok">Mercado importado · R${m.rodada??'?'} · ${m.n} atletas</span>`;
+  if(!b) return `<span class="pill warn">Status da R${D.meta.ate_rodada+1}: importe o mercado da R${state.rodada}</span>`;
+  const velho=b.ts&&(Date.now()-b.ts>26*3600e3);   // o build republica ao menos a cada 12 h; 26 h = dois ciclos perdidos
+  let h=`<span class="pill ${velho?'warn':'ok'}" title="Status e preços capturados da API oficial pelo build automático">Mercado oficial · ${b.n} atletas · ${b.ts?dhm(b.ts):(b.capturado||'')}${velho?' · desatualizado':''}</span>`;
+  if(b.status===1&&b.fecha_ts){ const f=b.fecha_ts>1e12?b.fecha_ts:b.fecha_ts*1000, falta=f-Date.now(); if(falta>0&&falta<30*86400e3) h+=`<span class="pill ${falta<6*3600e3?'warn':''}">Fecha ${dhm(f)}</span>`; }
+  else if(b.status===2) h+=`<span class="pill bad">Mercado fechado</span>`;
+  else if(b.status===4) h+=`<span class="pill warn">Mercado em manutenção</span>`;
+  return h;
+}
+const $=s=>document.querySelector(s);
+const fmt=(v,d=2)=>v==null||isNaN(v)?'–':v.toLocaleString('pt-BR',{minimumFractionDigits:d,maximumFractionDigits:d});
+const pct=v=>Math.round(v*100)+'%';
+function toast(t){const el=document.createElement('div');el.className='toast';el.textContent=t;document.body.appendChild(el);setTimeout(()=>el.remove(),3200);}
+
+function players(){
+  if(!override) return D.players;
+  const map=override.atletas;
+  const base=Object.fromEntries(D.players.map(p=>[p.id,p]));
+  const out=[];
+  for(const id in map){const o=map[id];const b=base[id];
+    out.push(b?{...b,st:o.st,pr:o.pr,c:o.c||b.c}:{id:+id,n:o.n,c:o.c,p:o.p,pr:o.pr,st:o.st,mp:o.mp,j:0,r:null,novo:true});}
+  return out;
+}
+function fixtures(r){
+  if(state.partidas&&String(state.partidas.rodada)===String(r)) return state.partidas.jogos;
+  return D.fixtures[r];
+}
+function elast(){ return state.elast||D.elast; }
+function wxRound(r){ // previsão base + edições do usuário
+  const base=D.wx?.[r]||{}, ed=state.wxEdit[r]||{}, out={};
+  for(const h in base){ out[h]={...base[h],...(ed[h]||{})}; }
+  for(const h in ed) if(!out[h]) out[h]={...ed[h]};
+  return out;
+}
+function wxFor(r,team,rm,force){ // force: null|'prev'|'chuva'|'calor'|'seco'
+  const h=rm[team].home?team:rm[team].opp, w=wxRound(r)[h];
+  const sc=force||state.wxScenario;
+  if(sc==='chuva') return {rain:1,temp:w?.temp??22};
+  if(sc==='calor') return {rain:0,temp:32};
+  if(sc==='seco') return {rain:0,temp:22};
+  if(!w||w.chuva==null||w.temp==null) return null;
+  return {rain:Math.min(1,w.chuva/100*elast().rain_scale),temp:w.temp};
+}
+function candidates(r,useWx){
+  if(useWx===undefined) useWx=state.usewx;
+  const fx=fixtures(r), rm=roundMap(fx), ok=new Set(state.duvida?[7,2]:[7]);
+  return players().filter(p=>rm[p.c]&&(ok.has(p.st)||state.locks.has(p.id))&&!state.vetos.has(p.id)&&(p.p===6||p.j>=state.minj||state.locks.has(p.id))).map(p=>{
+    const x=rm[p.c]; const pr=project(D,p,p.c,x.opp,x.home,useWx?wxFor(r,p.c,rm):null,elast()); const pp=pPlay(D,p);
+    return {...p,eCond:pr.e,e:state.usepp?pr.e*pp:pr.e,pp,sd:pr.sd,lam:pr.lam,mult:pr.mult,m:pr.m,opp:x.opp,home:x.home,lock:state.locks.has(p.id)};
+  });
+}
+function allProjected(r){
+  const rm=roundMap(fixtures(r));
+  return players().filter(p=>rm[p.c]).map(p=>{const x=rm[p.c];const pr=project(D,p,p.c,x.opp,x.home,state.usewx?wxFor(r,p.c,rm):null,elast());const pp=pPlay(D,p);return {...p,e:pr.e,eCond:pr.e,ev:pr.e*pp,pp,sd:pr.sd,lam:pr.lam,mult:pr.mult,m:pr.m,opp:x.opp,home:x.home};});
+}
+function why(p){
+  if(p.p===6) return `Vitória ${pct(p.m.p_win)} · xG ${fmt(p.m.xg)} x ${fmt(p.m.xga)}`;
+  const W=D.W, parts=[];
+  for(const s in p.lam){const v=W[s]*(p.lam[s]||0); if(Math.abs(v)>=0.4) parts.push([s,v]);}
+  parts.sort((a,b)=>b[1]-a[1]);
+  const top=parts.filter(x=>x[1]>0).slice(0,3).map(([s,v])=>{
+    let t=`<b>${s}</b> +${fmt(v,1)}`;
+    const mu=p.mult[s];
+    if(s==='SG') t+=` (${pct(p.m.p_sg)})`;
+    else if(mu&&Math.abs(mu-1)>=0.06){t+=` <span class="${mu>1?'up':'down'}">${mu>1?'+':''}${Math.round((mu-1)*100)}%</span>`;}
+    const wm=p.mult['wx_'+s]; if(wm&&Math.abs(wm-1)>=0.02) t+=` <span class="muted" title="fator clima">☂${wm>1?'+':''}${Math.round((wm-1)*100)}%</span>`;
+    return t;});
+  const neg=parts.filter(x=>x[1]<-0.4).slice(0,1).map(([s,v])=>`<b>${s}</b> ${fmt(v,1)}`);
+  return top.concat(neg).join(' · ');
+}
+function chip(p,cap){return `<div class="chip" title="${p.n} · ${NOMES[p.c]||p.c}"><div class="nm">${p.n}</div><div class="sub">${p.c} ${p.home?'x':'@'} ${p.opp}</div><div class="xp">${fmt(p.e,1)}</div>${cap?'<span class="cap">C</span>':''}</div>`;}
+
+function renderTime(){
+  const r=state.rodada, c=candidates(r);
+  const forms=state.formacao==='auto'?FORMACOES:{[state.formacao]:FORMACOES[state.formacao]};
+  const el=$('#tab-time');
+  const res=optimize(c,+state.budget,forms);
+  if(!res){el.innerHTML=`<p class="callout">Não há combinação possível com C$ ${fmt(+state.budget)} e os filtros atuais. Aumente as cartoletas, inclua “Dúvida” ou destrave jogadores.</p>`;return;}
+  const starters=res.team.map(p=>({...p,e:p.eCond}));
+  const byp=k=>starters.filter(p=>p.p===k).sort((a,b)=>b.e-a.e);
+  // capitão: maior ganho esperado do bônus (0,5 × xP × P(joga))
+  const capCands=starters.filter(p=>p.p!==6).map(p=>({p,g:0.5*p.e*p.pp,teto:p.e+1.28*p.sd})).sort((a,b)=>b.g-a.g);
+  const cap=capCands[0].p; starters.forEach(p=>p.cap=(p===cap));
+  // banco: pool = prováveis/dúvida com histórico, não vetados, preço <= titular mais barato da posição
+  const pool=allProjected(r).filter(p=>(p.st===7||p.st===2)&&p.j>=2&&!state.vetos.has(p.id));
+  const bench=pickBench(starters,pool);
+  // Reserva de Luxo: simula cada opção e escolhe o maior ganho esperado
+  let luxo=null, luxoRes={}; 
+  for(const pos in bench){ const s=simulate(D,starters,bench,+pos,1500); luxoRes[pos]=s.luxoGain; if(!luxo||s.luxoGain>luxoRes[luxo]) luxo=pos; }
+  const sim=simulate(D,starters,bench,luxo?+luxo:null,4000);
+  const custo=starters.reduce((a,b)=>a+b.pr,0);
+  const defs=byp(3).concat(byp(2));
+  const benchChip=(pos)=>{const b=bench[pos]; if(!b) return `<div class="chip bench"><div class="nm muted">sem reserva</div><div class="sub">${POSN[pos]}</div></div>`; return `<div class="chip bench" title="${b.n} · ${NOMES[b.c]||b.c}"><div class="nm">${b.n}</div><div class="sub">${POSN[pos]} · ${b.c} ${b.home?'x':'@'} ${b.opp}</div><div class="xp">${fmt(b.e,1)} <span class="muted">· ${pct(b.pp)}</span></div>${String(pos)===luxo?'<span class="cap lux" title="Reserva de Luxo">L</span>':''}</div>`;};
+  el.innerHTML=`
+  <div style="display:flex;flex-direction:column;gap:16px">
+    <div class="summary">
+      <div><div class="lbl">Pontuação esperada (simulada)</div><div class="big num">${fmt(sim.mean,1)}</div><div class="muted" style="font-size:12px">com capitão, banco e Reserva de Luxo</div></div>
+      <div><div class="lbl">Faixa provável (10%–90%)</div><div class="big num">${fmt(sim.p10,0)}–${fmt(sim.p90,0)}</div></div>
+      <div><div class="lbl">Esquema</div><div class="big">${res.formacao}</div></div>
+      <div><div class="lbl">Custo</div><div class="big num">C$ ${fmt(custo)}</div><div class="muted" style="font-size:12px">sobra C$ ${fmt(+state.budget-custo)}</div></div>
+      <div class="muted" style="font-size:13px;max-width:42ch">Rodada ${r} · ${D.datas[r]||''}${state.usewx?' · clima aplicado':''}${state.usepp?' · ponderado por P(joga)':''}. Banco vale <b class="num">+${fmt(sim.benchGain,1)}</b> e a Reserva de Luxo <b class="num">+${fmt(sim.luxoGain,1)}</b> pontos esperados.</div>
+    </div>
+    <div class="grid2">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="pitch" aria-label="Escalação no campo">
+          <div class="line">${byp(5).map(p=>chip(p,p===cap)).join('')}</div>
+          <div class="line">${byp(4).map(p=>chip(p,p===cap)).join('')}</div>
+          <div class="line">${defs.map(p=>chip(p,p===cap)).join('')}</div>
+          <div class="line">${byp(1).map(p=>chip(p,p===cap)).join('')}</div>
+        </div>
+        <div class="coach muted" style="font-size:13px">Técnico: <b style="color:var(--ink)">${byp(6)[0].n}</b> (${byp(6)[0].c} ${byp(6)[0].home?'x':'@'} ${byp(6)[0].opp}) · xP ${fmt(byp(6)[0].e,1)}</div>
+        <div class="lbl" style="margin-top:6px">Banco de reservas · <span style="color:var(--hi)">L</span> = Reserva de Luxo</div>
+        <div class="line benchline">${[1,2,3,4,5].filter(k=>byp(k).length).map(benchChip).join('')}</div>
+        <div class="tablebox" style="margin-top:6px"><table><thead><tr><th>Capitão</th><th class="r">xP</th><th class="r">P(joga)</th><th class="r">Ganho do bônus</th><th class="r">Teto</th></tr></thead><tbody>
+        ${capCands.slice(0,3).map(({p,g,teto},i)=>`<tr><td><b>${p.n}</b> <span class="muted">${p.c}</span>${i===0?' <span class="pill warn">C</span>':''}</td><td class="r num">${fmt(p.e,1)}</td><td class="r num">${pct(p.pp)}</td><td class="r num">+${fmt(g,2)}</td><td class="r num">${fmt(teto,1)}</td></tr>`).join('')}
+        </tbody></table></div>
+        <p class="muted" style="font-size:12.5px;margin:0">Ganho do bônus = 0,5 × xP × P(joga). Teto = xP + 1,28 desvios: troque para o 2º se precisar arriscar na liga.</p>
+      </div>
+      <div class="tablebox"><table>
+        <thead><tr><th>Pos</th><th>Jogador</th><th>Jogo</th><th class="r">C$</th><th class="r">xP</th><th class="r">P(joga)</th><th>Por que entra</th><th></th></tr></thead>
+        <tbody>${[1,2,3,4,5,6].flatMap(k=>byp(k)).map(p=>`<tr>
+          <td class="lbl">${POSN[p.p]}</td>
+          <td><b>${p.n}</b>${p===cap?' <span class="pill warn">C</span>':''}<div class="muted" style="font-size:12px">${NOMES[p.c]||p.c} · ${STATUS[p.st]||''}${p.novo?' · sem histórico':''}</div></td>
+          <td class="num" style="white-space:nowrap">${p.home?'x':'@'} ${p.opp}</td>
+          <td class="r num">${fmt(p.pr)}</td><td class="r num"><b>${fmt(p.e,1)}</b></td><td class="r num ${p.pp<0.8?'down':''}">${pct(p.pp)}</td>
+          <td class="why">${why(p)}</td>
+          <td><button class="small" data-veto="${p.id}" title="Tirar do time e recalcular">Vetar</button></td></tr>`).join('')}
+        ${Object.keys(bench).sort().map(pos=>{const b=bench[pos];return `<tr class="benchrow"><td class="lbl">R·${POSN[pos]}</td><td><b>${b.n}</b>${String(pos)===luxo?' <span class="pill warn">Luxo</span>':''}<div class="muted" style="font-size:12px">${NOMES[b.c]||b.c} · ${STATUS[b.st]||''}</div></td><td class="num" style="white-space:nowrap">${b.home?'x':'@'} ${b.opp}</td><td class="r num">${fmt(b.pr)}</td><td class="r num">${fmt(b.e,1)}</td><td class="r num">${pct(b.pp)}</td><td class="why">${String(pos)===luxo?`Luxo: +${fmt(luxoRes[pos],2)} esperados · `:''}${why(b)}</td><td><button class="small" data-veto="${b.id}" title="Tirar do banco">Vetar</button></td></tr>`}).join('')}</tbody></table></div>
+    </div>
+    <p class="muted" style="font-size:13px;margin:0">xP é a projeção se o jogador entrar em campo; P(joga) vem do status no mercado, da participação nos últimos 5 jogos e do preço (modelo ajustado em 2026: “Provável” no início da semana joga 87% das vezes). O banco não gasta cartoletas, mas cada reserva precisa custar no máximo o titular mais barato da posição. A Reserva de Luxo entra no lugar do pior titular da posição se pontuar mais, desde que todos os titulares joguem. Use “Vetar” quando souber que um jogador não vai jogar, vai ficar no banco ou sair cedo; o otimizador recalcula.</p>
+  </div>`;
+}
+function weakList(team){
+  const conc=D.teams[team]?.conc||{}, out=[];
+  for(const pos of [2,3,4,5]) for(const s of ['DS','FD','FF','FS']){const v=conc[pos]?.[s]; if(v) out.push([pos,s,v]);}
+  out.sort((a,b)=>b[2]-a[2]);
+  return out.slice(0,3).map(([pos,s,v])=>`<li>Cede <b>${v>1?'+':''}${Math.round((v-1)*100)}%</b> ${SCOUTN[s]} a ${POSN[pos]}</li>`).join('');
+}
+function renderJogos(){
+  const r=state.rodada, fx=fixtures(r);
+  $('#tab-jogos').innerHTML=`<div style="display:flex;flex-direction:column;gap:12px"><p class="muted" style="margin:0">Rodada ${r} · ${D.datas[r]||''}. xG = gols esperados pelo modelo; “cede” mostra onde a defesa de cada time mais concede scouts por posição (o que os jogadores do outro lado devem explorar).</p>
+  <div class="games">${fx.map(([a,b])=>{const rm0=roundMap(fx);const wa=state.usewx?wxFor(r,a,rm0):null;const m=matchInfo(D,a,b,true,wa,elast()), n=matchInfo(D,b,a,false,wa,elast());const w=wxRound(r)[a];
+    return `<article class="game">
+      <div class="vs"><div class="t">${a}</div><div class="xg num">${fmt(m.xg)} × ${fmt(m.xga)}<br><span class="lbl">xG</span></div><div class="t away">${b}</div></div>
+      <div class="prob" aria-hidden="true"><span style="width:${m.p_win*100}%"></span><span style="width:${m.p_draw*100}%"></span><span style="width:${(1-m.p_win-m.p_draw)*100}%"></span></div>
+      <div class="probtxt num"><span>${NOMES[a]} ${pct(m.p_win)}</span><span>Empate ${pct(m.p_draw)}</span><span>${pct(1-m.p_win-m.p_draw)} ${NOMES[b]}</span></div>
+      <div class="probtxt"><span>SG ${a}: <b class="num">${pct(m.p_sg)}</b></span><span>SG ${b}: <b class="num">${pct(n.p_sg)}</b></span></div>
+      ${w?`<div class="probtxt muted"><span>${w.est||''}${w.data?' · '+w.data.slice(8,10)+'/'+w.data.slice(5,7):''}${w.hora!=null?' '+String(Math.floor(w.hora)).padStart(2,'0')+'h'+(w.hora%1?'30':''):''}</span><span class="num">${w.temp!=null?w.temp+'°C':'–'} · ☂ ${w.chuva!=null?w.chuva+'%':'–'}</span></div>`:''}
+      <div class="weak"><div><span class="lbl">Defesa do ${a}</span><ul>${weakList(a)}</ul></div><div><span class="lbl">Defesa do ${b}</span><ul>${weakList(b)}</ul></div></div>
+    </article>`}).join('')}</div></div>`;
+}
+function renderRank(){
+  const r=state.rodada, ok=new Set(state.duvida?[7,2]:[7]);
+  let L=allProjected(r).filter(p=>state.rankPos==='all'||String(p.p)===state.rankPos);
+  const key={e:p=>p.e,ev:p=>p.ev,vpc:p=>p.ev/Math.max(p.pr,1),teto:p=>p.e+1.28*p.sd,pr:p=>p.pr,mp:p=>p.mp??-9,pp:p=>p.pp}[state.rankSort];
+  L.sort((a,b)=>key(b)-key(a)); L=L.slice(0,150);
+  const th=(k,t)=>`<th class="r sort" data-sort="${k}" aria-sort="${state.rankSort===k?'descending':'none'}">${t}${state.rankSort===k?' ▾':''}</th>`;
+  $('#tab-rank').innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">
+   <div class="posbar">${[['all','Todos'],['1','GOL'],['2','LAT'],['3','ZAG'],['4','MEI'],['5','ATA'],['6','TEC']].map(([k,t])=>`<button class="small ${state.rankPos===k?'on':''}" data-pos="${k}">${t}</button>`).join('')}</div>
+   <div class="tablebox" style="max-height:70vh"><table>
+   <thead><tr><th>Jogador</th><th>Pos</th><th>Jogo</th><th>Status</th>${th('pr','C$')}${th('e','xP')}${th('pp','P(joga)')}${th('ev','xP efetivo')}${th('teto','Teto')}${th('vpc','xP/C$')}${th('mp','Média')}<th class="r">J</th><th>Cruzamento</th><th></th></tr></thead>
+   <tbody>${L.map(p=>{const lk=state.locks.has(p.id),vt=state.vetos.has(p.id);const st=ok.has(p.st)?'ok':(p.st===2?'warn':'bad');
+    return `<tr><td><b>${p.n}</b><div class="muted" style="font-size:12px">${NOMES[p.c]||p.c}</div></td><td class="lbl">${POSN[p.p]}</td><td class="num" style="white-space:nowrap">${p.home?'x':'@'} ${p.opp}</td>
+    <td><span class="pill ${st}">${STATUS[p.st]||'?'}</span></td><td class="r num">${fmt(p.pr)}</td><td class="r num"><b>${fmt(p.e,1)}</b></td><td class="r num ${p.pp<0.8?'down':''}">${pct(p.pp)}</td><td class="r num">${fmt(p.ev,1)}</td><td class="r num">${fmt(p.e+1.28*p.sd,1)}</td><td class="r num">${fmt(p.ev/Math.max(p.pr,1),2)}</td><td class="r num">${fmt(p.mp,1)}</td><td class="r num">${p.j||0}</td>
+    <td class="why">${why(p)}</td><td style="white-space:nowrap"><button class="small ${lk?'on':''}" data-lock="${p.id}">Travar</button> <button class="small ${vt?'on':''}" data-veto="${p.id}">Vetar</button></td></tr>`}).join('')}</tbody></table></div>
+   <p class="muted" style="font-size:13px;margin:0">Teto = xP + 1,28 desvios (percentil ~90 aproximado). Bom critério de capitão quando você precisa arriscar na liga. “Travar” obriga o otimizador a escalar o jogador; “Vetar” o exclui.</p></div>`;
+}
+function heatColor(v,lo,hi){const t=Math.max(0,Math.min(1,(v-lo)/(hi-lo)));return `color-mix(in srgb, var(--accent) ${Math.round(t*70)}%, var(--surface))`;}
+function renderPlan(){
+  const rounds=Object.keys(D.fixtures).sort((a,b)=>a-b), teams=Object.keys(NOMES);
+  const metric=state.planMetric;
+  const rows=teams.map(t=>{let sum=0;const cells=rounds.map(r=>{const rm=roundMap(fixtures(r));const x=rm[t];if(!x)return {txt:'–'};const m=matchInfo(D,t,x.opp,x.home);const v=metric==='sg'?m.p_sg:m.xg;sum+=v;return {v,opp:x.opp,home:x.home};});return {t,cells,sum};});
+  rows.sort((a,b)=>b.sum-a.sum);
+  const lo=metric==='sg'?0.15:0.7, hi=metric==='sg'?0.5:2.0;
+  $('#tab-plan').innerHTML=`<div style="display:flex;flex-direction:column;gap:12px">
+   <div class="posbar"><button class="small ${metric==='sg'?'on':''}" data-metric="sg">Chance de SG (defesa)</button><button class="small ${metric==='xg'?'on':''}" data-metric="xg">Gols esperados (ataque)</button></div>
+   <p class="muted" style="margin:0">Calendário das rodadas 31 a 38. Mais verde = melhor sequência. Use para decidir quem comprar já pensando nas próximas rodadas (por exemplo, um goleiro com três jogos fáceis seguidos). x = em casa, @ = fora.</p>
+   <div class="tablebox"><table class="heat"><thead><tr><th>Time</th>${rounds.map(r=>`<th style="text-align:center">R${r}<br><span class="muted" style="font-weight:400;letter-spacing:0">${D.datas[r]||''}</span></th>`).join('')}<th class="r">${metric==='sg'?'Soma SG':'Soma xG'}</th></tr></thead>
+   <tbody>${rows.map(rw=>`<tr><td>${NOMES[rw.t]}</td>${rw.cells.map(c=>c.v==null?'<td>–</td>':`<td style="background:${heatColor(c.v,lo,hi)}">${metric==='sg'?pct(c.v):fmt(c.v,1)}<span class="vsx">${c.home?'x':'@'} ${c.opp}</span></td>`).join('')}<td class="r num"><b>${metric==='sg'?fmt(rw.sum,1):fmt(rw.sum,1)}</b></td></tr>`).join('')}</tbody></table></div>
+   <p class="muted" style="font-size:13px;margin:0">Rodada 33 confirmada pela tabela detalhada da CBF: Santos x Palmeiras na Vila Belmiro. Remarcações posteriores da CBF não aparecem aqui até você importar <code>/partidas</code> da rodada.</p></div>`;
+}
+function renderClima(){
+  const r=state.rodada, rm=roundMap(fixtures(r)), W=wxRound(r), E=elast(), fx=fixtures(r);
+  const A=candidates(r,false), B=candidates(r,true); const bi=Object.fromEntries(B.map(p=>[p.id,p])), ai=Object.fromEntries(A.map(p=>[p.id,p]));
+  const forms=state.formacao==='auto'?FORMACOES:{[state.formacao]:FORMACOES[state.formacao]};
+  const ra=optimize(A,+state.budget,forms), rb=optimize(B,+state.budget,forms);
+  const sc=state.wxScenario;
+  const scBtn=(k,t)=>`<button class="small ${sc===k?'on':''}" data-wxsc="${k}">${t}</button>`;
+  let cmp='';
+  if(ra&&rb){
+    const ids=new Set(ra.team.map(p=>p.id)), idsb=new Set(rb.team.map(p=>p.id));
+    const sai=ra.team.filter(p=>!idsb.has(p.id)), entra=rb.team.filter(p=>!ids.has(p.id));
+    const xa_a=ra.team.reduce((s,p)=>s+p.e,0), xa_b=ra.team.reduce((s,p)=>s+(bi[p.id]?.e??p.e),0), xb_b=rb.team.reduce((s,p)=>s+p.e,0);
+    cmp=`<div class="summary">
+      <div><div class="lbl">Time sem clima</div><div class="big num">${fmt(xa_a,1)}</div><div class="muted" style="font-size:12px">reavaliado com clima: <b class="num">${fmt(xa_b,1)}</b></div></div>
+      <div><div class="lbl">Time com clima</div><div class="big num">${fmt(xb_b,1)}</div><div class="muted" style="font-size:12px">ganho real do cruzamento: <b class="num">${fmt(xb_b-xa_b,2)}</b> pts</div></div>
+      <div><div class="lbl">Mudanças no time</div><div class="big">${sai.length}</div></div>
+    </div>
+    ${sai.length?`<p style="margin:0"><b>Sai:</b> ${sai.map(p=>`${p.n} (${POSN[p.p]} ${p.c})`).join(', ')} · <b>Entra:</b> ${entra.map(p=>`${p.n} (${POSN[p.p]} ${p.c})`).join(', ')}</p>`:`<p class="muted" style="margin:0">Com estes parâmetros o clima não troca nenhum jogador: os 12 escolhidos são os mesmos. Veja abaixo quanto cada projeção muda.</p>`}
+    <div class="tablebox"><table><thead><tr><th>Pos</th><th>Jogador (time sem clima)</th><th>Jogo</th><th class="r">xP sem</th><th class="r">xP com</th><th class="r">Δ</th><th>Condição no estádio</th></tr></thead><tbody>
+    ${ra.team.slice().sort((a,b)=>a.p-b.p).map(p=>{const b=bi[p.id];const d=(b?.e??p.e)-p.e;const h=p.home?p.c:p.opp;const w=W[h];
+      return `<tr><td class="lbl">${POSN[p.p]}</td><td><b>${p.n}</b> <span class="muted">${p.c}</span></td><td class="num">${p.home?'x':'@'} ${p.opp}</td><td class="r num">${fmt(p.e,2)}</td><td class="r num">${fmt(b?.e,2)}</td><td class="r num ${d>0.005?'up':d<-0.005?'down':''}">${d>0?'+':''}${fmt(d,2)}</td><td class="muted" style="font-size:12.5px">${w?`${w.temp!=null?w.temp+'°C':''} · chuva ${w.chuva!=null?w.chuva+'%':'–'}`:'sem previsão'}</td></tr>`}).join('')}
+    </tbody></table></div>`;
+  }
+  // maiores variações
+  const deltas=B.filter(p=>p.p!==6).map(p=>({p,d:p.e-(ai[p.id]?.e??p.e)})).sort((a,b)=>Math.abs(b.d)-Math.abs(a.d)).slice(0,10);
+  const RS=['DS','FS','FC','FD','FT','FF','CA','DE','XG'];
+  $('#tab-clima').innerHTML=`<div style="display:flex;flex-direction:column;gap:16px">
+   <div class="posbar"><span class="lbl" style="align-self:center">Cenário:</span>${scBtn('prev','Previsão')}${scBtn('chuva','Chuva forte em todos')}${scBtn('calor','Calor 32°C em todos')}${scBtn('seco','Seco e ameno')}</div>
+   <p class="muted" style="margin:0">Compara o time ótimo <b>sem</b> o fator clima com o time ótimo <b>com</b> clima, para a rodada ${r}. ${state.usewx?'O clima está ligado nas outras abas.':'Ligue “Cruzar com clima” na barra de controles para aplicar nas outras abas.'} Os cenários forçados servem para testar a sensibilidade do modelo.</p>
+   ${cmp}
+   <h3>Previsão por estádio (editável)</h3>
+   <div class="tablebox"><table><thead><tr><th>Jogo</th><th>Estádio · data/hora</th><th class="r">Máx/Mín</th><th class="r">T no jogo °C</th><th class="r">Chuva %</th><th class="r">Fator chuva</th></tr></thead><tbody>
+   ${fx.map(([a,b])=>{const w=W[a]||{};const rf=w.chuva!=null?Math.min(1,w.chuva/100*E.rain_scale):null;
+     return `<tr><td><b>${a}</b> x ${b}</td><td class="muted" style="font-size:12.5px">${w.est||D.estadios?.[a]||''}${w.data?' · '+w.data.slice(8,10)+'/'+w.data.slice(5,7):''}${w.hora!=null?' '+String(Math.floor(w.hora)).padStart(2,'0')+'h'+(w.hora%1?'30':'00'):''}</td><td class="r num">${w.tmax!=null?fmt(w.tmax,1)+' / '+fmt(w.tmin,1):'–'}</td>
+     <td class="r"><input class="num wxin" data-h="${a}" data-k="temp" type="number" step="0.5" value="${w.temp??''}" style="width:70px;text-align:right"></td>
+     <td class="r"><input class="num wxin" data-h="${a}" data-k="chuva" type="number" min="0" max="100" step="5" value="${w.chuva??''}" style="width:70px;text-align:right"></td>
+     <td class="r num">${rf!=null?fmt(rf,2):'–'}</td></tr>`}).join('')}
+   </tbody></table></div>
+   <p class="muted" style="font-size:13px;margin:0">Previsão capturada em ${D.meta.gerado} (máx/mín do dia e chance de chuva, por estádio). A temperatura no horário do jogo é interpolada do ciclo diurno. Edite os campos com a previsão mais recente antes do fechamento do mercado; o fator chuva = chance × ${E.rain_scale} (fração do dia chuvoso que vira chuva relevante durante os 90 minutos).</p>
+   <h3>Elasticidades (o quanto cada scout reage)</h3>
+   <div class="tablebox"><table><thead><tr><th>Scout</th>${RS.map(s=>`<th class="r">${s}</th>`).join('')}</tr></thead><tbody>
+   <tr><td>Chuva forte (×)</td>${RS.map(s=>`<td class="r"><input class="num elin" data-g="rain" data-s="${s}" type="number" step="0.01" value="${E.rain[s]??0}" style="width:64px;text-align:right"></td>`).join('')}</tr>
+   <tr><td>Calor, por °C acima de ${E.T0}</td>${RS.map(s=>`<td class="r"><input class="num elin" data-g="heat" data-s="${s}" type="number" step="0.001" value="${E.heat[s]??0}" style="width:64px;text-align:right"></td>`).join('')}</tr>
+   </tbody></table></div>
+   <p class="muted" style="font-size:13px;margin:0">XG = gols esperados dos dois times (afeta gol, assistência, SG e gols sofridos). Valores padrão são conservadores e seguem a literatura: calor reduz intensidade (distância, sprints, duelos), e chuva leve não tem efeito mensurável; chuva forte entra como hipótese de mais bolas divididas e menos chutes no alvo. <button class="small" id="elReset">Restaurar padrão</button></p>
+   <h3>Maiores variações de projeção nesta rodada</h3>
+   <div class="tablebox"><table><thead><tr><th>Jogador</th><th>Pos</th><th>Jogo</th><th class="r">xP sem</th><th class="r">xP com</th><th class="r">Δ</th></tr></thead><tbody>
+   ${deltas.map(({p,d})=>`<tr><td><b>${p.n}</b> <span class="muted">${p.c}</span></td><td class="lbl">${POSN[p.p]}</td><td class="num">${p.home?'x':'@'} ${p.opp}</td><td class="r num">${fmt(ai[p.id]?.e,2)}</td><td class="r num">${fmt(p.e,2)}</td><td class="r num ${d>0?'up':'down'}">${d>0?'+':''}${fmt(d,2)}</td></tr>`).join('')}
+   </tbody></table></div>
+  </div>`;
+}
+function renderMetodo(){
+  const W=D.W;
+  $('#tab-metodo').innerHTML=`<div class="prose">
+  <h2>Como a projeção é feita</h2>
+  <p>Para cada jogador e cada scout, o modelo calcula a taxa por jogo nesta temporada, com peso maior para os jogos recentes (meia-vida de ${D.meta.params.half_life} jogos) e puxada para a média da posição quando há poucos jogos. Essa taxa é multiplicada pelo quanto o <b>adversário cede daquele scout àquela posição</b> e pelo fator mando de campo.</p>
+  <p>Exemplo do cruzamento que você descreveu: um lateral que desarma muito enfrenta um time cujos jogadores perdem muita bola para laterais adversários. O índice “cede DS a LAT” do adversário sobe, e a projeção de desarmes do seu lateral sobe junto. O mesmo vale para finalizações de atacantes contra defesas que cedem muitos chutes, defesas do goleiro contra ataques que chutam muito no gol, e faltas sofridas contra times faltosos.</p>
+  <p>Gols, assistências, SG e gols sofridos vêm de um modelo de Poisson por jogo (força de ataque × fraqueza de defesa × mando). O gol do jogador é a fatia dele nos gols do time, ajustada ao xG daquele jogo. O técnico é projetado por regressão sobre xG, xGA e chance de vitória.</p>
+  <h3>Pesos dos scouts (2026)</h3>
+  <div class="tablebox"><table><thead><tr><th>Scout</th><th class="r">Pontos</th><th>Scout</th><th class="r">Pontos</th></tr></thead><tbody>
+  ${(()=>{const k=Object.keys(W);let s='';for(let i=0;i<k.length;i+=2){s+=`<tr><td>${k[i]} · ${SCOUTN[k[i]]||({PS:'pênalti sofrido',PP:'pênalti perdido',DP:'defesa de pênalti',PC:'pênalti cometido',CV:'vermelho',GC:'gol contra'}[k[i]])}</td><td class="r num">${fmt(W[k[i]],1)}</td>${k[i+1]?`<td>${k[i+1]} · ${SCOUTN[k[i+1]]||({PS:'pênalti sofrido',PP:'pênalti perdido',DP:'defesa de pênalti',PC:'pênalti cometido',CV:'vermelho',GC:'gol contra'}[k[i+1]])}</td><td class="r num">${fmt(W[k[i+1]],1)}</td>`:'<td></td><td></td>'}</tr>`}return s})()}
+  </tbody></table></div>
+  <p class="muted">Conferido nos dados: regredindo a pontuação oficial de 8.652 atuações de 2026 contra os scouts, os pesos acima reproduzem 100% dos pontos (R² = 1,000). Passe errado não pontua mais no Cartola, por isso não entra no modelo.</p>
+  <h3>Quando vetar ou travar</h3>
+  <p>Vete quando tiver informação que o modelo não tem: jogador poupado para Libertadores/Copa do Brasil, lesão de última hora, técnico anunciou banco, time já sem objetivo na tabela. Trave quando quiser garantir alguém (o otimizador monta o resto em volta). As duas marcações ficam salvas neste navegador.</p>
+  <h3>Teste contra rodadas já jogadas</h3>
+  <p>Simulei as rodadas 18 a 29 usando só os dados anteriores a cada uma (3.381 atuações). Os 3 melhores projetados por posição fizeram em média <b>6,6 pontos reais</b>, contra <b>5,8</b> escolhendo pela média do jogador (+13%). A correlação com a pontuação real foi 0,30 contra 0,25.</p>
+  <div class="callout">O cruzamento por posição ajuda, mas pouco: a maior parte do ganho vem do confronto em gols e SG e de amortecer jogadores com poucos jogos. Com só ~28 jogos por time, o “quanto cede a laterais” ainda é ruidoso; por isso o índice é amortecido (expoente 0,5 sobre a razão). Não existe na base do Cartola lado direito/esquerdo nem bolas perdidas por jogador, então o duelo “lateral direito contra lateral esquerdo” só pode ser medido pela posição.</div>
+  <h3>Chance de jogar, banco, capitão e Reserva de Luxo</h3>
+  <p>Nos snapshots de 2026, um jogador marcado “Provável” no início da semana entrou em campo em 87% das rodadas (Dúvida: 71%; Nulo: 25%; Contundido: 9%; Suspenso: 2%). Um modelo logístico combina status, participação nos últimos 5 jogos, se jogou a última, preço e posição (AUC 0,89, calibrado por faixa). A projeção efetiva usada pelo otimizador é xP × P(joga).</p>
+  <p>A rodada inteira é simulada 4.000 vezes: cada scout é sorteado de uma Poisson com a taxa projetada, os gols sofridos de cada clube são sorteados uma vez por simulação (o SG dos defensores do mesmo time fica correlacionado), cada jogador joga ou não conforme P(joga), e as regras do banco e da Reserva de Luxo são aplicadas sorteio a sorteio. Daí saem a média, a faixa 10–90% e o ganho esperado de cada mecanismo. O capitão é quem maximiza 0,5 × xP × P(joga); a Reserva de Luxo é a posição cujo reserva mais ganha na simulação.</p>
+  <p class="muted">Testei também um modelo de gradient boosting com 20 variáveis (médias móveis, scouts recentes, índices do adversário, xG). Em teste cego nas rodadas 18–29 ele ficou abaixo do modelo estrutural (correlação 0,27 contra 0,30), e por isso não entrou. Uma versão anterior parecia muito melhor (0,58) por usar o preço pós-rodada, que é função dos pontos: vazamento corrigido.</p>
+  <h3>Clima</h3>
+  <p>Quando ligado, cada scout recebe mais um multiplicador: (1 + chuva × elasticidade) × (1 + graus acima de 26 °C × elasticidade). A chuva entra como probabilidade de chuva relevante nos 90 minutos, e a temperatura é a estimada para o horário do jogo no estádio. O xG dos dois times também é ajustado, o que repercute em gol, assistência, SG e gols sofridos. Na aba Clima você vê o time ótimo com e sem o fator, o ganho líquido e os jogadores que trocam.</p>
+  <p class="muted">Não foi possível calibrar as elasticidades nos jogos de 2026 a partir daqui (sem acesso a reanálise meteorológica). O script <code>atualizar_modelo.py</code> traz a estrutura para isso: basta ligar a função de calibração a uma fonte horária (ERA5/Open-Meteo archive) no seu servidor.</p>
+  <h3>Fontes e atualização</h3>
+  <p>Scouts por rodada: snapshots oficiais da API do Cartola publicados no repositório <a href="https://github.com/henriquepgomide/caRtola" target="_blank" rel="noopener">caRtola</a> (até a rodada ${D.meta.ate_rodada}), validados jogo a jogo: em todos os 274 jogos, gols marcados batem com gols sofridos pelos goleiros. Tabela da CBF divulgada em dezembro de 2025.</p>
+  <p>Status (provável, dúvida, suspenso) e preços: botão <b>Atualizar escalações</b>, que lê o JSON oficial do mercado. Rodar o script <code>atualizar_modelo.py</code> depois de cada rodada recalcula as taxas e gera um novo <code>model_data.json</code> para importar aqui.</p>
+  </div>`;
+}
+function renderState(){
+  $('#datastate').innerHTML=`<span class="pill ok">Scouts até a R${D.meta.ate_rodada}</span>`+
+   pillMercado()+
+   (state.partidas?`<span class="pill ok">Partidas R${state.partidas.rodada}</span>`:'')+(state.usewx?`<span class="pill ok">Clima ligado</span>`:'')+
+   (state.locks.size||state.vetos.size?`<button class="small" id="clearLV">Limpar travas/vetos (${state.locks.size+state.vetos.size})</button>`:'');
+}
+function render(){ renderState(); const t=state.tab; ({time:renderTime,jogos:renderJogos,rank:renderRank,plan:renderPlan,clima:renderClima,metodo:renderMetodo})[t](); }
+function renderAll(){ render(); }
+
+// ---- importação ----
+function ingest(obj){
+  if(obj.players&&obj.teams&&obj.W){ D=obj; store.set('model',null); toast(`Modelo atualizado até a rodada ${obj.meta?.ate_rodada}`); return true; }
+  if(Array.isArray(obj.atletas)){
+    const clubes=obj.clubes||{}; const ab=id=>clubes[id]?.abreviacao||CLUB_IDS[id];
+    const at={};
+    obj.atletas.forEach(a=>{at[a.atleta_id]={n:a.apelido,c:ab(a.clube_id),p:a.posicao_id,pr:a.preco_num,st:a.status_id,mp:a.media_num};});
+    override={atletas:at,ts:Date.now()}; store.set('mercadoOverride',override);
+    state.mercado={rodada:obj.atletas[0]?.rodada_id,n:obj.atletas.length}; store.set('mercadoMeta',state.mercado);
+    toast(`Mercado aplicado: ${obj.atletas.length} atletas`); return true;
+  }
+  if(Array.isArray(obj.partidas)){
+    const jogos=obj.partidas.filter(p=>p.valida!==false).map(p=>[CLUB_IDS[p.clube_casa_id]||obj.clubes?.[p.clube_casa_id]?.abreviacao, CLUB_IDS[p.clube_visitante_id]||obj.clubes?.[p.clube_visitante_id]?.abreviacao]).filter(j=>j[0]&&j[1]);
+    state.partidas={rodada:obj.rodada,jogos}; if(obj.rodada&&D.fixtures[obj.rodada]) state.rodada=String(obj.rodada);
+    toast(`Rodada ${obj.rodada}: ${jogos.length} jogos válidos`); return true;
+  }
+  return false;
+}
+function parseAndIngest(txt){ try{ const o=JSON.parse(txt); if(!ingest(o)) toast('JSON não reconhecido. Use /atletas/mercado, /partidas ou model_data.json.'); else { syncControls(); render(); } }catch(e){ toast('Não consegui ler esse JSON. Copie a página inteira, do primeiro { ao último }.'); } }
+
+async function tryAutoFetch(){
+  const ctl=new AbortController(); const t=setTimeout(()=>ctl.abort(),4000);
+  try{ const r=await fetch('https://api.cartola.globo.com/atletas/mercado',{signal:ctl.signal}); clearTimeout(t); if(!r.ok) throw 0; const o=await r.json(); if(ingest(o)){render();return true;} }catch(e){} return false;
+}
+
+function syncControls(){
+  const sel=$('#rodada'); sel.innerHTML=Object.keys(D.fixtures).sort((a,b)=>a-b).map(r=>`<option value="${r}">R${r} · ${D.datas[r]||''}</option>`).join('');
+  sel.value=state.rodada; $('#budget').value=state.budget; $('#minj').value=state.minj; $('#duvida').checked=state.duvida; $('#usewx').checked=state.usewx; $('#usepp').checked=state.usepp;
+  const f=$('#formacao'); if(f.options.length<2) Object.keys(FORMACOES).forEach(k=>f.add(new Option(k,k))); f.value=state.formacao;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  if(b.dataset.tab){ state.tab=b.dataset.tab; document.querySelectorAll('nav.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b)); document.querySelectorAll('.tab').forEach(s=>s.hidden=s.id!=='tab-'+state.tab); render(); }
+  else if(b.dataset.veto){ const id=+b.dataset.veto; state.vetos.has(id)?state.vetos.delete(id):state.vetos.add(id); state.locks.delete(id); store.set('vetos',[...state.vetos]); store.set('locks',[...state.locks]); render(); }
+  else if(b.dataset.lock){ const id=+b.dataset.lock; state.locks.has(id)?state.locks.delete(id):state.locks.add(id); state.vetos.delete(id); store.set('vetos',[...state.vetos]); store.set('locks',[...state.locks]); render(); }
+  else if(b.dataset.pos){ state.rankPos=b.dataset.pos; render(); }
+  else if(b.dataset.metric){ state.planMetric=b.dataset.metric; render(); }
+  else if(b.dataset.wxsc){ state.wxScenario=b.dataset.wxsc; render(); }
+  else if(b.id==='elReset'){ state.elast=null; store.set('elast',null); render(); }
+  else if(b.id==='clearLV'){ state.locks.clear(); state.vetos.clear(); store.set('locks',[]); store.set('vetos',[]); render(); }
+});
+document.addEventListener('click',e=>{const th=e.target.closest('th[data-sort]'); if(th){state.rankSort=th.dataset.sort; render();}});
+document.addEventListener('change',e=>{
+  const i=e.target;
+  if(i.classList?.contains('wxin')){ const r=state.rodada; state.wxEdit[r]=state.wxEdit[r]||{}; state.wxEdit[r][i.dataset.h]=state.wxEdit[r][i.dataset.h]||{}; state.wxEdit[r][i.dataset.h][i.dataset.k]=i.value===''?null:+i.value; store.set('wxEdit',state.wxEdit); render(); }
+  if(i.classList?.contains('elin')){ const E=JSON.parse(JSON.stringify(elast())); E[i.dataset.g][i.dataset.s]=+i.value||0; state.elast=E; store.set('elast',E); render(); }
+});
+$('#usepp').addEventListener('change',e=>{state.usepp=e.target.checked;store.set('usepp',state.usepp);render();});
+$('#usewx').addEventListener('change',e=>{state.usewx=e.target.checked;store.set('usewx',state.usewx);render();});
+$('#rodada').addEventListener('change',e=>{state.rodada=e.target.value;store.set('rodada',state.rodada);render();});
+$('#budget').addEventListener('change',e=>{state.budget=+e.target.value||120;store.set('budget',state.budget);render();});
+$('#minj').addEventListener('change',e=>{state.minj=+e.target.value||0;store.set('minj',state.minj);render();});
+$('#duvida').addEventListener('change',e=>{state.duvida=e.target.checked;store.set('duvida',state.duvida);render();});
+$('#formacao').addEventListener('change',e=>{state.formacao=e.target.value;store.set('formacao',state.formacao);render();});
+$('#btnMercado').addEventListener('click',async()=>{ const b=$('#btnMercado'); b.textContent='Buscando…'; const ok=await tryAutoFetch(); b.textContent='Atualizar escalações'; if(!ok) $('#dlg').showModal(); });
+$('#dlgClose').addEventListener('click',()=>$('#dlg').close());
+$('#dlgApply').addEventListener('click',()=>{ const t=$('#pasteIn').value.trim(); if(t){ parseAndIngest(t); $('#dlg').close(); }});
+$('#fileIn').addEventListener('change',async e=>{ for(const f of e.target.files){ parseAndIngest(await f.text()); } $('#dlg').close(); });
+syncControls(); render();
+})();
+</script>

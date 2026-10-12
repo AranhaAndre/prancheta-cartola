@@ -1,0 +1,4 @@
+# A imagem só precisa da página pronta e da configuração do nginx
+*
+!site
+!nginx

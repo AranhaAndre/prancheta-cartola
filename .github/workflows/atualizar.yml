@@ -1,0 +1,116 @@
+# Reconstrói a Prancheta Cartola e publica quando há novidade.
+#   - de 2 em 2 horas (scouts do caRtola + status/preços da API oficial do Cartola)
+#   - a cada push que mexa no pipeline
+#   - na mão: aba Actions > atualizar-prancheta > Run workflow
+# O site gerado fica em site/ (commitado pelo bot). GitHub Pages publica direto daqui;
+# o Northflank, se usado, republica sozinho a cada commit em site/.
+name: atualizar-prancheta
+
+on:
+  workflow_dispatch:
+    inputs:
+      forcar:
+        description: "Publicar mesmo sem mudança nos dados"
+        type: boolean
+        default: false
+  schedule:
+    - cron: "23 */2 * * *"   # UTC; minuto fora da hora cheia para fugir do pico do GitHub
+  push:
+    branches: [main]
+    paths:
+      - "pipeline/**"
+      - "ci/**"
+      - "requirements.txt"
+      - ".github/workflows/atualizar.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: prancheta
+  cancel-in-progress: false
+
+env:
+  TZ: America/Sao_Paulo   # datas "gerado"/"capturado" em horário de Brasília
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write   # commit de site/
+      pages: write      # consultar se o GitHub Pages está ativo
+    outputs:
+      mudou: ${{ steps.build.outputs.mudou }}
+      pages: ${{ steps.pages.outputs.ativo }}
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Dependências
+        run: pip install -r requirements.txt
+
+      - name: Build (scouts + mercado oficial) e conferência
+        id: build
+        env:
+          FORCAR: ${{ inputs.forcar && '1' || '0' }}
+        run: bash ci/build.sh
+
+      - name: Commit do site
+        if: steps.build.outputs.mudou == 'true'
+        env:
+          RESUMO: ${{ steps.build.outputs.resumo }}
+        run: |
+          git config user.name "prancheta-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site
+          if git diff --staged --quiet; then
+            echo "nada a commitar"
+          else
+            git commit -m "site: ${RESUMO}"
+            git push || { git pull --rebase && git push; }
+          fi
+
+      - name: GitHub Pages está ativo?
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PAGES: ${{ vars.PAGES }}   # opcional: "on" força, "off" desliga; vazio = detecta sozinho
+        run: |
+          ativo=false
+          if [ "$PAGES" = "on" ]; then
+            ativo=true
+          elif [ "$PAGES" != "off" ]; then
+            tipo="$(gh api "repos/${GITHUB_REPOSITORY}/pages" --jq .build_type 2>/dev/null || true)"
+            echo "build_type do Pages: '${tipo}'"
+            [ "$tipo" = "workflow" ] && ativo=true
+          fi
+          echo "ativo=${ativo}" >> "$GITHUB_OUTPUT"
+          if [ "$ativo" != "true" ]; then
+            echo "::notice::GitHub Pages não publicado neste run (Settings > Pages > Source: GitHub Actions para ligar). O site continua commitado em site/."
+          fi
+
+      - name: Pacote para o Pages
+        if: steps.pages.outputs.ativo == 'true' && (steps.build.outputs.mudou == 'true' || github.event_name != 'schedule')
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    if: needs.build.outputs.pages == 'true' && (needs.build.outputs.mudou == 'true' || github.event_name != 'schedule')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - id: deploy
+        uses: actions/deploy-pages@v5

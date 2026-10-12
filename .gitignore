@@ -1,0 +1,12 @@
+.trabalho/
+__pycache__/
+*.pyc
+.venv/
+.env
+# saídas do pipeline quando rodado direto dentro de pipeline/
+pipeline/model_data.json
+pipeline/prancheta_cartola.html
+pipeline/mercado.json
+pipeline/partidas.json
+pipeline/status.json
+pipeline/cartola/
