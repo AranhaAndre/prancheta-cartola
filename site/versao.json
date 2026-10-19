@@ -1,10 +1,10 @@
 {
- "impressao": "b5ada73315eaa83351b8c0dcdeb9b39bd70576881ae95a01812d8dac906a9fec",
+ "impressao": "aac2ace14cf9a6968174aa8414b98ce0c82508d8fb0f29cf372b85d101807e66",
  "ate_rodada": 30,
  "jogadores": 789,
  "mercado": true,
- "mercado_capturado": "2026-10-19 17:00",
- "publicado_ts": 1792440052,
- "publicado": "2026-10-19 17:00 -03",
- "motivo": "sem mudança, mas publicação com 15 h (renova o carimbo)"
+ "mercado_capturado": "2026-10-19 20:48",
+ "publicado_ts": 1792453727,
+ "publicado": "2026-10-19 20:48 -03",
+ "motivo": "dados ou painel mudaram"
 }
