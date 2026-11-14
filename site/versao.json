@@ -1,10 +1,10 @@
 {
- "impressao": "dc15cf9f7ae4040a3c7bab85f029c6cecd1da09abd433a7f0dd6525599c9d44d",
+ "impressao": "adbd85935b6afef81ce01d5e8825fec7b2cbfbd810208fba509bd7e9fde621a3",
  "ate_rodada": 34,
- "jogadores": 782,
+ "jogadores": 783,
  "mercado": true,
- "mercado_capturado": "2026-11-14 12:12",
- "publicado_ts": 1794669136,
- "publicado": "2026-11-14 12:12 -03",
+ "mercado_capturado": "2026-11-14 17:48",
+ "publicado_ts": 1794689284,
+ "publicado": "2026-11-14 17:48 -03",
  "motivo": "dados ou painel mudaram"
 }
