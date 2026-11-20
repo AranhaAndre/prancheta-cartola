@@ -1,10 +1,10 @@
 {
- "impressao": "547cf4a7910462e411100735aa0a6d5ff3d3751a2dafdb82955fb2a3220671a5",
- "ate_rodada": 34,
+ "impressao": "cb1f4ecbc74c7d1b3ce67ca4074751fba7b90e0e301a325b361b7dec6b629b1e",
+ "ate_rodada": 35,
  "jogadores": 783,
  "mercado": true,
- "mercado_capturado": "2026-11-20 00:31",
- "publicado_ts": 1795145499,
- "publicado": "2026-11-20 00:31 -03",
- "motivo": "dados ou painel mudaram"
+ "mercado_capturado": "2026-11-20 10:12",
+ "publicado_ts": 1795180341,
+ "publicado": "2026-11-20 10:12 -03",
+ "motivo": "rodada nova de scouts (34 -> 35)"
 }
